@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Upload, FileImage, Scan, Loader2 } from "lucide-react";
@@ -17,6 +17,7 @@ export default function PrescriptionUploader() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [extractedMedicines, setExtractedMedicines] = useState<PrescriptionMedicine[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Mock OCR extraction function (in a real app, this would call an API)
   const extractMedicinesFromImage = async (file: File): Promise<PrescriptionMedicine[]> => {
@@ -59,6 +60,37 @@ export default function PrescriptionUploader() {
     }
   };
   
+  const handleBrowseClick = () => {
+    // Programmatically trigger file input click
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const droppedFile = e.dataTransfer.files[0];
+      setFile(droppedFile);
+      
+      if (droppedFile.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          setImagePreview(event.target?.result as string);
+        };
+        reader.readAsDataURL(droppedFile);
+      } else {
+        setImagePreview(null);
+      }
+      
+      setExtractedMedicines([]);
+    }
+  };
+  
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+  
   const handleExtract = async () => {
     if (!file) {
       toast.error("Please upload a prescription file first");
@@ -94,26 +126,43 @@ export default function PrescriptionUploader() {
     <div className="space-y-6">
       <Card>
         <CardContent className="p-6">
-          <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
+          <div 
+            className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 cursor-pointer"
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onClick={handleBrowseClick}
+          >
             <div className="mb-4">
               <FileText className="mx-auto h-12 w-12 text-gray-400" />
             </div>
-            <p className="mb-2 text-sm text-gray-600">Upload your prescription image or PDF</p>
+            <p className="mb-2 text-sm text-gray-600">
+              Drag & drop your prescription image or PDF here
+            </p>
+            <p className="text-xs text-gray-500 mb-4">
+              or click to browse files
+            </p>
             <div className="mt-4">
-              <label htmlFor="file-upload" className="cursor-pointer">
-                <Button variant="outline" className="relative">
-                  <Upload className="mr-2 h-4 w-4" />
-                  Choose File
-                  <input
-                    id="file-upload"
-                    name="file-upload"
-                    type="file"
-                    className="sr-only"
-                    accept="image/*,.pdf"
-                    onChange={handleFileChange}
-                  />
-                </Button>
-              </label>
+              <input
+                ref={fileInputRef}
+                id="file-upload"
+                name="file-upload"
+                type="file"
+                className="hidden"
+                accept="image/*,.pdf"
+                onChange={handleFileChange}
+                onClick={(e) => e.stopPropagation()}
+              />
+              <Button 
+                variant="outline" 
+                className="relative"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBrowseClick();
+                }}
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                Choose File
+              </Button>
             </div>
             {file && (
               <div className="mt-3 text-sm text-gray-500">
