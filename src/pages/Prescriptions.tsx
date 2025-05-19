@@ -1,4 +1,3 @@
-
 import Navbar from "@/components/ui/navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, Download, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import PrescriptionUploader from "@/components/prescription/PrescriptionUploader";
 
 const Prescriptions = () => {
   return (
@@ -30,9 +30,10 @@ const Prescriptions = () => {
         </div>
         
         <Tabs defaultValue="active" className="w-full">
-          <TabsList className="grid w-full md:w-auto grid-cols-3 mb-8">
+          <TabsList className="grid w-full md:w-auto grid-cols-4 mb-8">
             <TabsTrigger value="active">Active</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
+            <TabsTrigger value="upload">Upload</TabsTrigger>
             <TabsTrigger value="analysis">Analysis</TabsTrigger>
           </TabsList>
           
@@ -208,6 +209,10 @@ const Prescriptions = () => {
                 </table>
               </div>
             </div>
+          </TabsContent>
+          
+          <TabsContent value="upload" className="space-y-4">
+            <PrescriptionUploader />
           </TabsContent>
           
           <TabsContent value="analysis">
