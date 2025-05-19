@@ -53,9 +53,6 @@ const Auth = () => {
         
         {view === 'signIn' ? (
           <SignIn 
-            routing="hash" 
-            path="/sign-in" 
-            signUpUrl="#sign-up"
             appearance={{
               elements: {
                 formButtonPrimary: "bg-smartmed-emerald hover:bg-smartmed-emerald/90 text-sm normal-case"
@@ -64,9 +61,6 @@ const Auth = () => {
           />
         ) : (
           <SignUp 
-            routing="hash" 
-            path="/sign-up" 
-            signInUrl="#sign-in"
             appearance={{
               elements: {
                 formButtonPrimary: "bg-smartmed-emerald hover:bg-smartmed-emerald/90 text-sm normal-case"

@@ -12,7 +12,7 @@ import {
 import { useAuth, UserButton, SignInButton } from "@clerk/clerk-react";
 
 const Navbar = () => {
-  const { isSignedIn, user } = useAuth();
+  const { isSignedIn } = useAuth();
   
   return (
     <nav className="border-b border-gray-200 bg-white">
