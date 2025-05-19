@@ -9,8 +9,11 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import { useAuth, UserButton, SignInButton } from "@clerk/clerk-react";
 
 const Navbar = () => {
+  const { isSignedIn, user } = useAuth();
+  
   return (
     <nav className="border-b border-gray-200 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,52 +57,45 @@ const Navbar = () => {
             </div>
           </div>
           <div className="flex items-center">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
-                  <Bell className="h-5 w-5 text-gray-500" />
-                  <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <div className="p-2 font-semibold border-b">Notifications</div>
-                <DropdownMenuItem>
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm">Appointment reminder: Dr. Sarah Johnson in 30 minutes</p>
-                    <p className="text-xs text-gray-500">Today, 10:00 AM</p>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm">Prescription refill reminder: Medication X</p>
-                    <p className="text-xs text-gray-500">Yesterday, 2:34 PM</p>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="justify-center">
-                  <Button variant="link" size="sm">View all notifications</Button>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {isSignedIn && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Bell className="h-5 w-5 text-gray-500" />
+                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80">
+                  <div className="p-2 font-semibold border-b">Notifications</div>
+                  <DropdownMenuItem>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm">Appointment reminder: Dr. Sarah Johnson in 30 minutes</p>
+                      <p className="text-xs text-gray-500">Today, 10:00 AM</p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm">Prescription refill reminder: Medication X</p>
+                      <p className="text-xs text-gray-500">Yesterday, 2:34 PM</p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="justify-center">
+                    <Button variant="link" size="sm">View all notifications</Button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
             
             <div className="ml-3 relative">
-              <div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src="/placeholder.svg" />
-                        <AvatarFallback>JD</AvatarFallback>
-                      </Avatar>
-                      <span className="ml-2 text-sm hidden md:block">John Doe</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                    <DropdownMenuItem>Sign out</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+              {isSignedIn ? (
+                <UserButton />
+              ) : (
+                <SignInButton>
+                  <Button variant="outline" className="bg-smartmed-emerald text-white hover:bg-smartmed-emerald/90">
+                    Sign In
+                  </Button>
+                </SignInButton>
+              )}
             </div>
           </div>
         </div>

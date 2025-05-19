@@ -9,6 +9,8 @@ import NotFound from "./pages/NotFound";
 import Consultations from "./pages/Consultations";
 import Prescriptions from "./pages/Prescriptions";
 import Pharmacy from "./pages/Pharmacy";
+import Auth from "./pages/Auth";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -19,11 +21,18 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/consultations" element={<Consultations />} />
-          <Route path="/prescriptions" element={<Prescriptions />} />
-          <Route path="/pharmacy" element={<Pharmacy />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          {/* Public routes */}
+          <Route path="/auth" element={<Auth />} />
+          
+          {/* Protected routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Index />} />
+            <Route path="/consultations" element={<Consultations />} />
+            <Route path="/prescriptions" element={<Prescriptions />} />
+            <Route path="/pharmacy" element={<Pharmacy />} />
+          </Route>
+          
+          {/* Catch-all route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
