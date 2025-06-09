@@ -7,12 +7,13 @@ import AppointmentList from "@/components/dashboard/AppointmentList";
 import MedicineReminder from "@/components/dashboard/MedicineReminder";
 import DoctorList from "@/components/dashboard/DoctorList";
 import WelcomeBanner from "@/components/dashboard/WelcomeBanner";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
-  const { isSignedIn, user } = useAuth();
+  const { isSignedIn } = useAuth();
+  const { user } = useUser();
   const [prescriptionCount, setPrescriptionCount] = useState(0);
 
   useEffect(() => {

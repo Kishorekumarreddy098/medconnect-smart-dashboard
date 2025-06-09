@@ -1,10 +1,11 @@
 
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { Link } from "react-router-dom";
 
 const WelcomeBanner = () => {
-  const { isSignedIn, user } = useAuth();
+  const { isSignedIn } = useAuth();
+  const { user } = useUser();
   
   return (
     <div className="col-span-12 rounded-lg bg-gradient-smartmed p-6 text-white">
