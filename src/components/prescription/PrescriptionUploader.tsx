@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Upload, Scan, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 
 export default function PrescriptionUploader() {
@@ -13,7 +13,8 @@ export default function PrescriptionUploader() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, getToken } = useAuth();
+  const { user } = useUser();
   const navigate = useNavigate();
 
   const convertFileToBase64 = (file: File): Promise<string> => {
@@ -80,7 +81,7 @@ export default function PrescriptionUploader() {
       return;
     }
 
-    if (!isSignedIn) {
+    if (!isSignedIn || !user) {
       toast.error("Please sign in to process prescriptions");
       navigate('/auth');
       return;
@@ -91,9 +92,10 @@ export default function PrescriptionUploader() {
     try {
       const base64Data = await convertFileToBase64(file);
 
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error("Please sign in to process prescriptions");
+      // Get the Clerk token to authenticate with Supabase
+      const clerkToken = await getToken({ template: "supabase" });
+      if (!clerkToken) {
+        toast.error("Authentication error. Please sign in again.");
         navigate('/auth');
         return;
       }
@@ -101,10 +103,11 @@ export default function PrescriptionUploader() {
       const { data, error } = await supabase.functions.invoke('process-prescription-ocr', {
         body: {
           imageData: base64Data,
-          fileName: file.name
+          fileName: file.name,
+          userId: user.id
         },
         headers: {
-          Authorization: `Bearer ${session.access_token}`
+          Authorization: `Bearer ${clerkToken}`
         }
       });
 
@@ -198,7 +201,7 @@ export default function PrescriptionUploader() {
         <div className="mt-6 flex justify-center">
           <Button 
             onClick={handleProcessPrescription} 
-            disabled={!file || isProcessing}
+            disabled={!file || isProcessing || !isSignedIn}
             className="bg-smartmed-emerald hover:bg-smartmed-emerald/90"
           >
             {isProcessing ? (

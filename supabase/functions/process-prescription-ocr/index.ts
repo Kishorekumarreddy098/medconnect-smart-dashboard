@@ -16,25 +16,14 @@ serve(async (req) => {
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     );
 
-    // Get user from auth header
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      throw new Error('No authorization header');
+    const { imageData, fileName, userId } = await req.json();
+
+    if (!userId) {
+      throw new Error('User ID is required');
     }
-
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    );
-
-    if (userError || !user) {
-      throw new Error('Invalid user');
-    }
-
-    const { imageData, fileName } = await req.json();
 
     // Convert base64 to blob for Azure OCR
     const imageBuffer = Uint8Array.from(atob(imageData), c => c.charCodeAt(0));
@@ -169,7 +158,7 @@ ${extractedText}`;
     const { data: prescription, error: prescriptionError } = await supabaseClient
       .from('prescriptions')
       .insert({
-        user_id: user.id,
+        user_id: userId,
         patient_name: prescriptionData.patient_name,
         doctor_name: prescriptionData.doctor_name,
         prescription_date: prescriptionData.prescription_date,
