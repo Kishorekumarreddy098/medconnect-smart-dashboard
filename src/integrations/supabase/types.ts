@@ -9,7 +9,89 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      prescription_medicines: {
+        Row: {
+          created_at: string
+          dosage: string | null
+          duration: string | null
+          frequency: string | null
+          id: string
+          instructions: string | null
+          medicine_name: string
+          prescription_id: string
+        }
+        Insert: {
+          created_at?: string
+          dosage?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          instructions?: string | null
+          medicine_name: string
+          prescription_id: string
+        }
+        Update: {
+          created_at?: string
+          dosage?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          instructions?: string | null
+          medicine_name?: string
+          prescription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescription_medicines_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescriptions: {
+        Row: {
+          additional_instructions: string | null
+          created_at: string
+          doctor_name: string | null
+          id: string
+          image_url: string | null
+          ocr_text: string | null
+          patient_name: string | null
+          prescription_date: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          additional_instructions?: string | null
+          created_at?: string
+          doctor_name?: string | null
+          id?: string
+          image_url?: string | null
+          ocr_text?: string | null
+          patient_name?: string | null
+          prescription_date?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          additional_instructions?: string | null
+          created_at?: string
+          doctor_name?: string | null
+          id?: string
+          image_url?: string | null
+          ocr_text?: string | null
+          patient_name?: string | null
+          prescription_date?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
