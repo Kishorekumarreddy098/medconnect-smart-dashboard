@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { FileText } from "lucide-react";
 import PrescriptionCard from "./PrescriptionCard";
 
 type Prescription = {
