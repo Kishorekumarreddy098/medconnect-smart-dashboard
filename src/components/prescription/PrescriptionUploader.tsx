@@ -5,19 +5,22 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Upload, Scan, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 
 export default function PrescriptionUploader() {
   const [file, setFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
 
   const convertFileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
         const result = reader.result as string;
-        // Remove the data URL prefix to get just the base64 data
         const base64Data = result.split(',')[1];
         resolve(base64Data);
       };
@@ -77,20 +80,24 @@ export default function PrescriptionUploader() {
       return;
     }
 
+    if (!isSignedIn) {
+      toast.error("Please sign in to process prescriptions");
+      navigate('/auth');
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
-      // Convert file to base64
       const base64Data = await convertFileToBase64(file);
 
-      // Get auth session
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast.error("Please log in to process prescriptions");
+        toast.error("Please sign in to process prescriptions");
+        navigate('/auth');
         return;
       }
 
-      // Call OCR edge function
       const { data, error } = await supabase.functions.invoke('process-prescription-ocr', {
         body: {
           imageData: base64Data,
@@ -109,14 +116,12 @@ export default function PrescriptionUploader() {
 
       if (data.success) {
         toast.success("Prescription processed successfully!");
-        // Clear the form
         setFile(null);
         setImagePreview(null);
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
         
-        // Show extracted data
         toast.success(`Found ${data.extracted_data.medicines?.length || 0} medicines in prescription`);
       } else {
         toast.error(data.error || "Failed to process prescription");

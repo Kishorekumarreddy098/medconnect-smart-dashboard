@@ -22,11 +22,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* Public routes */}
+          <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Index />} />
             <Route path="/consultations" element={<Consultations />} />
             <Route path="/prescriptions" element={<Prescriptions />} />
             <Route path="/pharmacy" element={<Pharmacy />} />

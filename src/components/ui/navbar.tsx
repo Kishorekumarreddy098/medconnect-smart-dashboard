@@ -1,7 +1,6 @@
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell } from "lucide-react";
 import { 
   DropdownMenu, 
@@ -13,6 +12,9 @@ import { useAuth, UserButton, SignInButton } from "@clerk/clerk-react";
 
 const Navbar = () => {
   const { isSignedIn } = useAuth();
+  const location = useLocation();
+  
+  const isActive = (path: string) => location.pathname === path;
   
   return (
     <nav className="border-b border-gray-200 bg-white">
@@ -32,28 +34,48 @@ const Navbar = () => {
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link 
                 to="/" 
-                className="border-smartmed-emerald text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                className={`${
+                  isActive('/') 
+                    ? 'border-smartmed-emerald text-gray-900' 
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
               >
                 Dashboard
               </Link>
-              <Link 
-                to="/consultations" 
-                className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-              >
-                Consultations
-              </Link>
-              <Link 
-                to="/prescriptions" 
-                className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-              >
-                Prescriptions
-              </Link>
-              <Link 
-                to="/pharmacy" 
-                className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-              >
-                Pharmacy
-              </Link>
+              {isSignedIn && (
+                <>
+                  <Link 
+                    to="/consultations" 
+                    className={`${
+                      isActive('/consultations') 
+                        ? 'border-smartmed-emerald text-gray-900' 
+                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                    } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                  >
+                    Consultations
+                  </Link>
+                  <Link 
+                    to="/prescriptions" 
+                    className={`${
+                      isActive('/prescriptions') 
+                        ? 'border-smartmed-emerald text-gray-900' 
+                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                    } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                  >
+                    Prescriptions
+                  </Link>
+                  <Link 
+                    to="/pharmacy" 
+                    className={`${
+                      isActive('/pharmacy') 
+                        ? 'border-smartmed-emerald text-gray-900' 
+                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                    } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                  >
+                    Pharmacy
+                  </Link>
+                </>
+              )}
             </div>
           </div>
           <div className="flex items-center">
@@ -69,18 +91,9 @@ const Navbar = () => {
                   <div className="p-2 font-semibold border-b">Notifications</div>
                   <DropdownMenuItem>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm">Appointment reminder: Dr. Sarah Johnson in 30 minutes</p>
-                      <p className="text-xs text-gray-500">Today, 10:00 AM</p>
+                      <p className="text-sm">No new notifications</p>
+                      <p className="text-xs text-gray-500">Check back later</p>
                     </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm">Prescription refill reminder: Medication X</p>
-                      <p className="text-xs text-gray-500">Yesterday, 2:34 PM</p>
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="justify-center">
-                    <Button variant="link" size="sm">View all notifications</Button>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
